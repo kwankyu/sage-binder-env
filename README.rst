@@ -12,15 +12,15 @@ SageMath kernel, click on this badge
 An example Binder repo for SageMath
 -----------------------------------
 
-Have a repository full of Jupyter notebooks using SageMath? It's easy to setup
+Have a repository full of Jupyter notebooks using SageMath? It's easy to set up
 Binder to let anyone run them. Just fork this repo, put your notebooks in the
-`notebooks` directory.  and modify this `README.rst` to your needs. In
+`notebooks` directory, and modify this `README.rst` to your needs. In
 particular, you probably want to modify this line::
 
-:target: https://mybinder.org/v2/gh/...
+    :target: https://mybinder.org/v2/gh/...
 
 with `...` filled with the name of your forked repo. This makes the Binder badge use your
-repo to create the Jupyter computing environment.
+repo to create the computing environment.
 
 
 Extending the Dockerfile
@@ -30,7 +30,7 @@ The `Dockerfile` builds Sage with base Docker image::
 
     FROM ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-targets-optional:dev
 
-which contains Sage built in the current develop branch.
+which contains the Sage built in the current develop branch.
 
 It includes Sage itself, and all the software packages typically
 included in a standard Sage installation, though not *everything*. In

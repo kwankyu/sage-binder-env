@@ -34,9 +34,11 @@ USER ${NB_USER}
 # Install jupyterlab to Sage
 RUN /sage/sage -pip install --no-warn-script-location jupyterlab
 
-# Install sagemath kernel to jupyter
-RUN mkdir -p $(jupyter --data-dir)/kernels \
-    && ln -s /sage/venv/share/jupyter/kernels/sagemath $(jupyter --data-dir)/kernels
+# This is where kernels are installed
+RUN mkdir -p $(jupyter --data-dir)/kernels
+
+# Install sagemath kernel
+RUN ln -s /sage/venv/share/jupyter/kernels/sagemath $(jupyter --data-dir)/kernels
 
 # Start in the home directory of the user
 WORKDIR /home/${NB_USER}

@@ -16,6 +16,9 @@ RUN apt-get install -y apt-utils
 RUN apt-get install -y python3-pip
 RUN python3 -m pip install --no-warn-script-location jupyterlab
 
+# Disable annoying pupup for Jupyter news
+RUN jupyter labextension disable "@jupyterlab/apputils-extension:announcements"
+
 # Create user "alice" whose uid is 1000
 ARG NB_USER=alice
 ARG NB_UID=1000
@@ -24,7 +27,7 @@ ENV NB_UID ${NB_UID}
 ENV HOME /home/${NB_USER}
 RUN adduser --disabled-password --gecos "Default user" --uid ${NB_UID} ${NB_USER}
 
-# Make sure the contents of our repo are in ${HOME}
+# Make sure the contents of the notebooks directory are in ${HOME}
 COPY notebooks/* ${HOME}/
 RUN chown -R ${NB_UID} ${HOME}
 

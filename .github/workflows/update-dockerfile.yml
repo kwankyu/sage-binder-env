@@ -1,4 +1,4 @@
-name: Docker Image Trigger
+name: Watch Sage Docker image updates
 
 on:
   schedule:
@@ -6,30 +6,40 @@ on:
   workflow_dispatch:
 
 jobs:
-  pull-latest-sage-docker-image:
+  build:
     runs-on: ubuntu-latest
 
+    env:
+      SAGE_DOCKER_LATEST: "ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-targets:latest"
+
     steps:
-      - name: Get latest Sage version
-        id: latest-sage-version
-        run: |
-          VERSION=$(gh api -X GET /repos/sagemath/sage/packages/docker/sagemath/sage/tags | jq -r '.[].name' | sort -V | tail -n1)
-          echo "::set-output name=version::${VERSION}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Update Dockerfile
-        run: sed -i "s/FROM .*/FROM ghcr.io\/sagemath\/sage\/sage-ubuntu-focal-standard-with-targets:${{ steps.latest-sage-version.outputs.version }}/g" Dockerfile
+    - name: Get SageMath Version
+      id: get-version
+      run: |
+        SAGE_VERSION=$(docker run --rm $SAGE_DOCKER_LATEST /sage/sage --version | grep -oP 'SageMath version \K[0-9.]+(?:beta\d+)?')
+        echo "SAGE_VERSION=${SAGE_VERSION}" >> $GITHUB_ENV
 
-      - name: Commit changes
-        run: |
-          git config --global user.email "alice@wonderland"
-          git config --global user.name "Alice"
-          git add Dockerfile
-          git commit -m "Update Dockerfile with latest Sage version"
+    - name: Use SageMath Version
+      run: echo "The SageMath version is $SAGE_VERSION"
 
-      - name: Push changes to master
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
+    - name: Replace Docker Image Tag
+      run: |
+        SAGE_IMAGE_NAME="${SAGE_DOCKER_LATEST%:latest}"
+        NEW_IMAGE_NAME="${SAGE_IMAGE_NAME}:${SAGE_VERSION}"
+        echo "SAGE_DOCKER_UPDATED=${NEW_IMAGE_NAME}" >> $GITHUB_ENV
+
+    - name: Update Dockerfile
+      run: |
+        SAGE_DOCKER_UPDATED_ESCAPED=$(echo "${SAGE_DOCKER_UPDATED}" | sed 's/\//\\\//g')
+        sed -i "s/FROM .*/FROM $SAGE_DOCKER_UPDATED_ESCAPED/g" Dockerfile
+
+    - name: Commit changes
+      run: |
+        git config --global user.email alice@wonderland
+        git config --global user.name Alice
+        git add Dockerfile
+        git commit -a -m "Update Dockerfile to use latest stable version of Sage"
+        git push -f origin

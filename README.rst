@@ -28,9 +28,9 @@ Extending the Dockerfile
 
 The `Dockerfile` builds Sage with base Docker image::
 
-    FROM ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-targets-optional:dev
+    FROM ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-targets:latest
 
-which contains the Sage built in the current develop branch.
+which contains the latest stable version of Sage.
 
 It includes Sage itself, and all the software packages typically
 included in a standard Sage installation, though not *everything*. In
@@ -38,7 +38,7 @@ particular not optional Sage SPKGs, or other system software packages.
 
 So in order to install additional Sage SPKGs, include a line like::
 
-    RUN sage -i <spkg-name>
+    RUN /sage/sage -i <spkg-name>
 
 in the `Dockerfile`.
 

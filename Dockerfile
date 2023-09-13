@@ -34,6 +34,9 @@ RUN chown -R ${NB_UID} ${HOME}
 # Install jupyterlab to Sage
 RUN /sage/sage -pip install --no-warn-script-location jupyterlab
 
+# Install Sage package
+# RUN /sage/sage -i <spkg-name>
+
 # Switch to the user
 USER ${NB_USER}
 

@@ -31,11 +31,11 @@ RUN adduser --disabled-password --gecos "Default user" --uid ${NB_UID} ${NB_USER
 COPY notebooks/* ${HOME}/
 RUN chown -R ${NB_UID} ${HOME}
 
-# Switch to the user
-USER ${NB_USER}
-
 # Install jupyterlab to Sage
 RUN /sage/sage -pip install --no-warn-script-location jupyterlab
+
+# Switch to the user
+USER ${NB_USER}
 
 # This is where kernels are installed
 RUN mkdir -p $(jupyter --data-dir)/kernels

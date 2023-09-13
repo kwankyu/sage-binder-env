@@ -10,16 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up gh CLI
-        uses: cli-action/setup@v2
-        with:
-          gh-version: latest
-
       - name: Get latest Sage version
         id: latest-sage-version
         run: |
           VERSION=$(gh api -X GET /repos/sagemath/sage/packages/docker/sagemath/sage/tags | jq -r '.[].name' | sort -V | tail -n1)
           echo "::set-output name=version::${VERSION}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update Dockerfile
         run: sed -i "s/FROM .*/FROM ghcr.io\/sagemath\/sage\/sage-ubuntu-focal-standard-with-targets:${{ steps.latest-sage-version.outputs.version }}/g" Dockerfile

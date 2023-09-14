@@ -26,7 +26,7 @@ jobs:
 
     - name: Replace Docker Image Tag
       run: |
-        SAGE_IMAGE_NAME="${SAGE_DOCKER_LATEST%:latest}"
+        SAGE_IMAGE_NAME="${SAGE_DOCKER_LATEST%:dev}"
         NEW_IMAGE_NAME="${SAGE_IMAGE_NAME}:${SAGE_VERSION}"
         echo "SAGE_DOCKER_UPDATED=${NEW_IMAGE_NAME}" >> $GITHUB_ENV
 

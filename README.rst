@@ -6,7 +6,7 @@ access a computing environment created by `Binder <http://mybinder.org>`_ using
 SageMath kernel, click on this badge
 
 .. image:: https://mybinder.org/badge_logo.svg
- :target: https://mybinder.org/v2/gh/sagemath/sage-binder-env/master
+ :target: https://mybinder.org/v2/gh/sagemath/sage-binder-env/dev
 
 
 An example Binder repo for SageMath
@@ -28,9 +28,9 @@ Extending the Dockerfile
 
 The `Dockerfile` builds Sage with base Docker image::
 
-    FROM ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-targets:latest
+    FROM ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-targets:dev
 
-which contains the latest stable version of Sage.
+which contains the latest develop version of Sage.
 
 It includes Sage itself, and all the software packages typically
 included in a standard Sage installation, though not *everything*. In

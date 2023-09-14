@@ -22,8 +22,8 @@ RUN jupyter labextension disable "@jupyterlab/apputils-extension:announcements"
 # Create user "alice" whose uid is 1000
 ARG NB_USER=alice
 ARG NB_UID=1000
-ENV NB_USER ${NB_USER}
-ENV NB_UID ${NB_UID}
+ENV NB_USER alice
+ENV NB_UID 1000
 ENV HOME /home/${NB_USER}
 RUN adduser --disabled-password --gecos "Default user" --uid ${NB_UID} ${NB_USER}
 
@@ -36,6 +36,8 @@ RUN /sage/sage -pip install --no-warn-script-location jupyterlab
 
 # Install Sage package
 # RUN /sage/sage -i <spkg-name>
+
+RUN chown -R ${NB_USER}:${NB_USER} /sage/sage
 
 # Switch to the user
 USER ${NB_USER}

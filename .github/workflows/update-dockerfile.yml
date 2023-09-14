@@ -1,4 +1,4 @@
-name: Watch Sage Docker image updates
+name: Monitor Sage Docker image updates
 
 on:
   schedule:

@@ -41,3 +41,9 @@ jobs:
         git config --global user.name Alice
         git commit -a --amend -m "Update Dockerfile for Sage ${SAGE_VERSION}"
         git push -f origin dev
+
+    - name: Have Binder build
+      timeout-minutes: 10
+      continue-on-error: true
+      run: |
+        curl -L https://mybinder.org/build/gh/sagemath/sage-binder-env/dev

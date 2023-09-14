@@ -1,4 +1,4 @@
-name: Monitor Sage Docker dev image updates
+name: Monitor Sage dev image updates
 
 on:
   schedule:
@@ -22,9 +22,6 @@ jobs:
         SAGE_VERSION=$(docker run --rm $SAGE_DOCKER_LATEST /sage/sage --version | grep -oP 'SageMath version \K[0-9.]+(?:beta\d+)?(?:rc\d+)?')
         echo "SAGE_VERSION=${SAGE_VERSION}" >> $GITHUB_ENV
 
-    - name: Use SageMath Version
-      run: echo "The SageMath version is $SAGE_VERSION"
-
     - name: Replace Docker Image Tag
       run: |
         SAGE_IMAGE_NAME="${SAGE_DOCKER_LATEST%:latest}"
@@ -40,7 +37,9 @@ jobs:
       run: |
         git config --global user.email alice@wonderland
         git config --global user.name Alice
+        git stash
         git checkout dev
+        git stash pop
         git add Dockerfile
         git commit --amend -m "Update Dockerfile for Sage ${SAGE_VERSION}"
         git push -f origin dev

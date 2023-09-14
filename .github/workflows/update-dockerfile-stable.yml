@@ -43,6 +43,5 @@ jobs:
       run: |
         git config --global user.email alice@wonderland
         git config --global user.name Alice
-        git add Dockerfile
-        git commit --amend -m "Update Dockerfile for Sage ${SAGE_VERSION}"
+        git commit -a --amend -m "Update Dockerfile for Sage ${SAGE_VERSION}"
         git push -f origin master

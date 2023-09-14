@@ -37,7 +37,7 @@ RUN /sage/sage -pip install --no-warn-script-location jupyterlab
 # Install Sage package
 # RUN /sage/sage -i <spkg-name>
 
-RUN chown -R ${NB_USER}:${NB_USER} /sage/sage
+RUN chown -R ${NB_USER}:${NB_USER} /sage
 
 # Switch to the user
 USER ${NB_USER}

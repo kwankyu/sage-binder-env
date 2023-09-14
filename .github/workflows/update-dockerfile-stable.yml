@@ -1,0 +1,45 @@
+name: Monitor Sage Docker image updates
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Run once every day
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      SAGE_DOCKER_LATEST: "ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-targets:latest"
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Get SageMath Version
+      id: get-version
+      run: |
+        SAGE_VERSION=$(docker run --rm $SAGE_DOCKER_LATEST /sage/sage --version | grep -oP 'SageMath version \K[0-9.]+(?:beta\d+)?')
+        echo "SAGE_VERSION=${SAGE_VERSION}" >> $GITHUB_ENV
+
+    - name: Use SageMath Version
+      run: echo "The SageMath version is $SAGE_VERSION"
+
+    - name: Replace Docker Image Tag
+      run: |
+        SAGE_IMAGE_NAME="${SAGE_DOCKER_LATEST%:latest}"
+        NEW_IMAGE_NAME="${SAGE_IMAGE_NAME}:${SAGE_VERSION}"
+        echo "SAGE_DOCKER_UPDATED=${NEW_IMAGE_NAME}" >> $GITHUB_ENV
+
+    - name: Update Dockerfile
+      run: |
+        SAGE_DOCKER_UPDATED_ESCAPED=$(echo "${SAGE_DOCKER_UPDATED}" | sed 's/\//\\\//g')
+        sed -i "s/FROM .*/FROM $SAGE_DOCKER_UPDATED_ESCAPED/g" Dockerfile
+
+    - name: Commit changes
+      run: |
+        git config --global user.email alice@wonderland
+        git config --global user.name Alice
+        git add Dockerfile
+        git commit --amend -m "Update Dockerfile for Sage ${SAGE_VERSION}"
+        git push -f origin main

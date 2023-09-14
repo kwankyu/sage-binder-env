@@ -34,6 +34,7 @@ jobs:
       run: |
         SAGE_DOCKER_UPDATED_ESCAPED=$(echo "${SAGE_DOCKER_UPDATED}" | sed 's/\//\\\//g')
         sed -i "s/FROM .*/FROM $SAGE_DOCKER_UPDATED_ESCAPED/g" Dockerfile
+        sed -i "s/FROM .*/FROM $SAGE_DOCKER_UPDATED_ESCAPED/g" README.rst
 
     - name: Commit changes
       run: |

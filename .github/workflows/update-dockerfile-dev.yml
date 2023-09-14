@@ -18,13 +18,12 @@ jobs:
       with:
         ref: dev
 
-    - name: Get SageMath Version
-      id: get-version
+    - name: Get SageMath version
       run: |
         SAGE_VERSION=$(docker run --rm $SAGE_DOCKER_LATEST /sage/sage --version | grep -oP 'SageMath version \K[0-9.]+(?:beta\d+)?(?:rc\d+)?')
         echo "SAGE_VERSION=${SAGE_VERSION}" >> $GITHUB_ENV
 
-    - name: Replace Docker Image Tag
+    - name: Replace Docker image tag
       run: |
         SAGE_IMAGE_NAME="${SAGE_DOCKER_LATEST%:dev}"
         NEW_IMAGE_NAME="${SAGE_IMAGE_NAME}:${SAGE_VERSION}"

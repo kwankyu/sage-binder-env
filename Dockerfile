@@ -37,6 +37,9 @@ RUN /sage/sage -pip install --no-warn-script-location jupyterlab
 # Install Sage package
 # RUN /sage/sage -i <spkg-name>
 
+# https://groups.google.com/g/sage-devel/c/fRufANUCNdY
+RUN /sage/sage -pip install --no-warn-script-location ipympl
+
 # Switch to the user
 USER ${NB_USER}
 

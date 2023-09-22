@@ -41,7 +41,7 @@ RUN ln -s $(cat /sage/venv_link) /sage/venv && rm /sage/venv_link
 RUN rm -R /sage/local/share/doc
 
 # Configure Sage library
-RUN /sage/sage -pip install /sage/pkgs/sage-conf
+RUN /sage/sage -pip install --root-user-action=ignore /sage/pkgs/sage-conf
 
 # Remove problematic two lines!
 RUN sed -i '/^__requires__/d' /sage/venv/bin/sage-venv-config
@@ -65,10 +65,8 @@ RUN chown -R ${NB_USER}:${NB_USER} ${HOME}
 # Switch to the user
 USER ${NB_USER}
 
-# This is where kernels are installed
-RUN mkdir -p $(jupyter --data-dir)/kernels
-
 # Install sagemath kernel
+RUN mkdir -p $(jupyter --data-dir)/kernels
 RUN ln -s /sage/venv/share/jupyter/kernels/sagemath $(jupyter --data-dir)/kernels
 
 # Start in the home directory of the user

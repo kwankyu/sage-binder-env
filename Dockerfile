@@ -4,7 +4,7 @@
 # Pull the Sage docker image
 FROM ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-targets:dev AS target
 
-# Resolve symbolic links to recreate later
+# Resolve symbolic links to recreate them later
 RUN readlink /sage/prefix >> /sage/prefix_link
 RUN readlink /sage/venv >> /sage/venv_link
 
@@ -57,10 +57,7 @@ RUN adduser --disabled-password --gecos "Default user" --uid ${NB_UID} ${NB_USER
 
 # Make sure the contents of the notebooks directory are in ${HOME}
 COPY notebooks/* ${HOME}/
-RUN chown -R ${NB_UID} ${HOME}
-
-# https://groups.google.com/g/sage-devel/c/fRufANUCNdY
-RUN /sage/sage -pip install --no-warn-script-location ipympl
+RUN chown -R ${NB_USER}:${NB_USER} ${HOME}
 
 # Install Sage package
 # RUN /sage/sage -i <spkg-name>

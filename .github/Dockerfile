@@ -8,7 +8,7 @@ FROM ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-targets:latest AS tar
 RUN readlink /sage/prefix >> /sage/prefix_link
 RUN readlink /sage/venv >> /sage/venv_link
 
-FROM ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-system-packages:dev
+FROM ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-system-packages:latest
 
 USER root
 

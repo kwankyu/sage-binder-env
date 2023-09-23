@@ -6,7 +6,8 @@ on:
   workflow_dispatch:
 
 env:
-  SAGE_DOCKER: ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-targets
+  SAGE_TARGET: ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-targets
+  SAGE_SYSTEM: ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-system-packages
   TAG: dev
   BRANCH: dev
 
@@ -26,22 +27,20 @@ jobs:
         ref: ${{ env.BRANCH }}
     - name: Get SageMath version
       run: |
-        SAGE_VERSION=$(docker run --rm $SAGE_DOCKER:$TAG /sage/sage --version | grep -oP 'SageMath version \K[0-9.]+(?:beta\d+)?(?:rc\d+)?')
+        SAGE_VERSION=$(docker run --rm ${SAGE_TARGET}:$TAG /sage/sage --version | grep -oP 'SageMath version \K[0-9.]+(?:beta\d+)?(?:rc\d+)?')
         echo "SAGE_VERSION=${SAGE_VERSION}" >> $GITHUB_ENV
-    - name: Replace Docker image tag
+    - name: Update version in files
       run: |
-        IMAGE_NAME="${SAGE_DOCKER}:${SAGE_VERSION}"
-        echo "SAGE_DOCKER_VERSION=${IMAGE_NAME}" >> $GITHUB_ENV
-    - name: Update Dockerfile
-      run: |
-        SAGE_DOCKER_VERSION_ESCAPED=$(echo "${SAGE_DOCKER_VERSION}" | sed 's/\//\\\//g')
-        sed -i "s/FROM \S*/FROM $SAGE_DOCKER_VERSION_ESCAPED/g" .github/Dockerfile
-    - name: Update Binder files
-      run: |
+        SAGE_TARGET_ESCAPED=$(echo "${SAGE_TARGET}" | sed 's/\//\\\//g' | sed 's/\./\\\./g')
+        SAGE_TARGET_VERSION_ESCAPED=$(echo "${SAGE_TARGET}:${SAGE_VERSION}" | sed 's/\//\\\//g' | sed 's/\./\\\./g')
+        sed -i "s/FROM ${SAGE_TARGET_ESCAPED}:\S*/FROM ${SAGE_TARGET_VERSION_ESCAPED}/g" .github/Dockerfile
+        SAGE_SYSTEM_ESCAPED=$(echo "${SAGE_SYSTEM}" | sed 's/\//\\\//g' | sed 's/\./\\\./g')
+        SAGE_SYSTEM_VERSION_ESCAPED=$(echo "${SAGE_SYSTEM}:${SAGE_VERSION}" | sed 's/\//\\\//g' | sed 's/\./\\\./g')
+        sed -i "s/FROM ${SAGE_SYSTEM_ESCAPED}:\S*/FROM ${SAGE_SYSTEM_VERSION_ESCAPED}/g" .github/Dockerfile
         PACKAGE_NAME=ghcr.io/${{ github.repository }}:${SAGE_VERSION}
         PACKAGE_NAME_ESCAPED=$(echo "${PACKAGE_NAME}" | sed 's/\//\\\//g')
-        sed -i "s/FROM \S*/FROM $PACKAGE_NAME_ESCAPED/g" Dockerfile
-        sed -i "s/FROM \S*/FROM $SAGE_DOCKER_UPDATED_ESCAPED/g" README.rst
+        sed -i "s/FROM \S*/FROM ${PACKAGE_NAME_ESCAPED}/g" Dockerfile
+        sed -i "s/FROM \S*/FROM ${SAGE_TARGET_VERSION_ESCAPED}/g" README.rst
         echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_ENV
     - name: Commit changes
       run: |

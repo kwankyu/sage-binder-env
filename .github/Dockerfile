@@ -36,9 +36,6 @@ COPY --from=target /sage/venv_link /sage/venv_link
 RUN ln -s $(cat /sage/prefix_link) /sage/prefix && rm /sage/prefix_link
 RUN ln -s $(cat /sage/venv_link) /sage/venv && rm /sage/venv_link
 
-# Remove Sage doc
-RUN rm -R /sage/local/share/doc
-
 # Configure Sage library
 RUN /sage/sage -pip install --root-user-action=ignore /sage/pkgs/sage-conf
 

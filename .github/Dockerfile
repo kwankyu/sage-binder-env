@@ -17,6 +17,7 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV DEBCONF_NOWARNINGS="yes"
 
 # Install jupyterlab to the system
+RUN apt-get update
 RUN apt-get install -y python3-pip
 RUN python3 -m pip install --no-warn-script-location notebook jupyterlab
 RUN python3 -m pip install --no-warn-script-location ipywidgets

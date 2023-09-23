@@ -2,7 +2,7 @@
 # Reference: https://mybinder.readthedocs.io/en/latest/tutorials/dockerfile.html
 
 # Pull the Sage docker image
-FROM ghcr.io/sagemath/sage-binder-env:dev
+FROM ghcr.io/sagemath/sage-binder-env:master
 
 USER root
 

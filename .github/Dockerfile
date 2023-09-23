@@ -2,7 +2,7 @@
 # Reference: https://mybinder.readthedocs.io/en/latest/tutorials/dockerfile.html
 
 # Pull the Sage docker image
-FROM ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-targets:dev AS target
+FROM ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-targets:latest AS target
 
 # Resolve symbolic links to recreate them later
 RUN readlink /sage/prefix >> /sage/prefix_link

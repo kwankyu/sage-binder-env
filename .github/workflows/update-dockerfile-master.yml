@@ -67,7 +67,7 @@ jobs:
     # Build docker image for Binder from Dockerfile at root
 
     - name: Binder build
-      timeout-minutes: 10
+      timeout-minutes: 20
       continue-on-error: true
       run: |
         curl --keepalive-time 600 -L https://mybinder.org/build/gh/sagemath/sage-binder-env/$BRANCH

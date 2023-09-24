@@ -1,2 +1,0 @@
-# Exclude files from ADD and COPY
-sage/local/share/doc

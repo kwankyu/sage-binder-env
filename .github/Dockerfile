@@ -8,7 +8,7 @@ RUN readlink /sage/prefix >> /sage/prefix_link
 RUN readlink /sage/venv >> /sage/venv_link
 
 # To exclude doc directory in the next stage
-RUN echo "sage/local/share/doc" >> .dockerignore
+RUN rm -rf /sage/local/share/doc
 
 FROM ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-system-packages:latest
 

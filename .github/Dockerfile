@@ -29,7 +29,14 @@ RUN jupyter labextension disable "@jupyterlab/apputils-extension:announcements"
 # Install /sage from target
 COPY --from=target /sage/src/bin /sage/src/bin
 COPY --from=target /sage/src/sage /sage/src/sage
-COPY --from=target /sage/local /sage/local
+COPY --from=target /sage/local/bin /sage/local/bin
+COPY --from=target /sage/local/etc /sage/local/etc
+COPY --from=target /sage/local/include /sage/local/include
+COPY --from=target /sage/local/lib /sage/local/lib
+COPY --from=target /sage/local/libexec /sage/local/libexec
+COPY --from=target /sage/local/share /sage/local/share
+COPY --from=target /sage/local/var /sage/local/var
+RUN cd /sage/local && ln -s lib lib64
 COPY --from=target /sage/sage /sage/sage
 COPY --from=target /sage/pkgs/sage-conf /sage/pkgs/sage-conf
 

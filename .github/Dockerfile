@@ -7,6 +7,9 @@ FROM ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-targets:latest AS tar
 RUN readlink /sage/prefix >> /sage/prefix_link
 RUN readlink /sage/venv >> /sage/venv_link
 
+# To exclude doc directory in the next stage
+RUN echo "sage/local/share/doc" >> .dockerignore
+
 FROM ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-system-packages:latest
 
 USER root
@@ -26,7 +29,7 @@ RUN jupyter labextension disable "@jupyterlab/apputils-extension:announcements"
 # Install /sage from target
 COPY --from=target /sage/src/bin /sage/src/bin
 COPY --from=target /sage/src/sage /sage/src/sage
-COPY --from=target --exclude=/sage/local/share/doc/** /sage/local /sage/local
+COPY --from=target /sage/local /sage/local
 COPY --from=target /sage/sage /sage/sage
 COPY --from=target /sage/pkgs/sage-conf /sage/pkgs/sage-conf
 

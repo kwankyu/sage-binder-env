@@ -7,6 +7,11 @@ FROM ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-targets:latest AS tar
 RUN readlink /sage/prefix >> /sage/prefix_link
 RUN readlink /sage/venv >> /sage/venv_link
 
+WORKDIR /sage
+
+# Slim Sage
+RUN LC_ALL=C find local src pkgs -executable -type f -exec strip '{}' ';' 2>&1 | grep -v "file format not recognized" || true
+
 # To exclude doc directory in the next stage
 RUN rm -rf /sage/local/share/doc
 

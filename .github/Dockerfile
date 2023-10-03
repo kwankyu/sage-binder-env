@@ -9,15 +9,18 @@ RUN readlink /sage/venv >> /sage/venv_link
 
 WORKDIR /sage
 
-# Slim Sage
+# Strip executables in /sage
 RUN LC_ALL=C find local src pkgs -executable -type f -exec strip '{}' ';' 2>&1 | grep -v "file format not recognized" || true
 
 # To exclude doc directory in the next stage
-RUN rm -rf /sage/local/share/doc
+RUN rm -rf local/share/doc
 
 FROM ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-system-packages:latest
 
 USER root
+
+# Strip executables in /usr
+RUN LC_ALL=C find /usr -executable -type f -exec strip '{}' ';' 2>&1 | grep -v "file format not recognized" || true
 
 # Remove warnings
 ENV DEBIAN_FRONTEND noninteractive

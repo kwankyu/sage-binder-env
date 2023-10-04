@@ -19,9 +19,6 @@ FROM ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-system-packages:lates
 
 USER root
 
-# Strip executables in /usr
-RUN LC_ALL=C find /usr -executable -type f -exec strip '{}' ';' 2>&1 | grep -v "file format not recognized" || true
-
 # Remove warnings
 ENV DEBIAN_FRONTEND noninteractive
 ENV DEBCONF_NOWARNINGS="yes"

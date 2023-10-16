@@ -38,9 +38,6 @@ jobs:
         SAGE_SYSTEM_VERSION_ESCAPED=$(echo "${SAGE_SYSTEM}:${SAGE_VERSION}" | sed 's/\//\\\//g' | sed 's/\./\\\./g')
         sed -i "s/FROM ${SAGE_SYSTEM_ESCAPED}:\S*/FROM ${SAGE_SYSTEM_VERSION_ESCAPED}/g" .github/Dockerfile
         PACKAGE_NAME=ghcr.io/${{ github.repository }}:${SAGE_VERSION}
-        PACKAGE_NAME_ESCAPED=$(echo "${PACKAGE_NAME}" | sed 's/\//\\\//g')
-        sed -i "s/FROM \S*/FROM ${PACKAGE_NAME_ESCAPED}/g" Dockerfile
-        sed -i "s/FROM \S*/FROM ${SAGE_TARGET_VERSION_ESCAPED}/g" README.rst
         echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_ENV
     - name: Commit changes
       run: |
@@ -63,6 +60,25 @@ jobs:
         context: .github
         push: true
         tags: ${{ env.PACKAGE_NAME }}
+
+    # Update files for Binder
+
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ env.BRANCH }}
+    - name: Update version in files
+      run: |
+        PACKAGE_NAME=${{ env.PACKAGE_NAME }}
+        PACKAGE_NAME_ESCAPED=$(echo "${PACKAGE_NAME}" | sed 's/\//\\\//g')
+        sed -i "s/FROM \S*/FROM ${PACKAGE_NAME_ESCAPED}/g" Dockerfile
+        sed -i "s/FROM \S*/FROM ${PACKAGE_NAME_ESCAPED}/g" README.rst
+    - name: Commit changes
+      run: |
+        git config --global user.email alice@wonderland
+        git config --global user.name alice
+        git commit -a --amend -m "Update files for Binder"
+        git push -f origin $BRANCH
 
     # Build docker image for Binder from Dockerfile at root
 

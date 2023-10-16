@@ -26,9 +26,9 @@ repo to create the computing environment.
 Extending the Dockerfile
 ------------------------
 
-The `Dockerfile` builds Sage with base Docker image::
+The `Dockerfile` is based on the Docker image::
 
-    FROM ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-targets:latest
+    FROM ghcr.io/sagemath/sage-binder-env:latest
 
 which contains the latest stable version of Sage.
 

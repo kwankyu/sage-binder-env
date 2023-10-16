@@ -25,12 +25,9 @@ jobs:
       uses: actions/checkout@v4
       with:
         ref: ${{ env.BRANCH }}
-    - name: Get SageMath version
+    - name: Prepare .github/Dockerfile
       run: |
         SAGE_VERSION=$(docker run --rm ${SAGE_TARGET}:$TAG /sage/sage --version | grep -oP 'SageMath version \K[0-9.]+(?:beta\d+)?(?:rc\d+)?')
-        echo "SAGE_VERSION=${SAGE_VERSION}" >> $GITHUB_ENV
-    - name: Update version in files
-      run: |
         SAGE_TARGET_ESCAPED=$(echo "${SAGE_TARGET}" | sed 's/\//\\\//g' | sed 's/\./\\\./g')
         SAGE_TARGET_VERSION_ESCAPED=$(echo "${SAGE_TARGET}:${SAGE_VERSION}" | sed 's/\//\\\//g' | sed 's/\./\\\./g')
         sed -i "s/FROM ${SAGE_TARGET_ESCAPED}:\S*/FROM ${SAGE_TARGET_VERSION_ESCAPED}/g" .github/Dockerfile
@@ -39,8 +36,6 @@ jobs:
         sed -i "s/FROM ${SAGE_SYSTEM_ESCAPED}:\S*/FROM ${SAGE_SYSTEM_VERSION_ESCAPED}/g" .github/Dockerfile
         PACKAGE_NAME=ghcr.io/${{ github.repository }}:${SAGE_VERSION}
         echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_ENV
-    - name: Commit changes
-      run: |
         git config --global user.email alice@wonderland
         git config --global user.name alice
         git commit -a --amend -m "Dockerfile for Sage ${SAGE_VERSION}"
@@ -67,14 +62,12 @@ jobs:
       uses: actions/checkout@v4
       with:
         ref: ${{ env.BRANCH }}
-    - name: Update version in files
+    - name: Update files for Binder
       run: |
         PACKAGE_NAME=${{ env.PACKAGE_NAME }}
         PACKAGE_NAME_ESCAPED=$(echo "${PACKAGE_NAME}" | sed 's/\//\\\//g')
         sed -i "s/FROM \S*/FROM ${PACKAGE_NAME_ESCAPED}/g" Dockerfile
         sed -i "s/FROM \S*/FROM ${PACKAGE_NAME_ESCAPED}/g" README.rst
-    - name: Commit changes
-      run: |
         git config --global user.email alice@wonderland
         git config --global user.name alice
         git commit -a --amend -m "Update files for Binder"

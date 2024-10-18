@@ -1,0 +1,74 @@
+name: Monitor Sage dev image updates
+
+on:
+  schedule:
+    - cron: '0 1 * * *'  # Run every day
+  workflow_dispatch:
+
+env:
+  SAGE_DOCKER: ghcr.io/sagemath/sage/sage-ubuntu-focal-standard-with-targets
+  TAG: dev
+  BRANCH: dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ env.BRANCH }}
+    - name: Get SageMath version
+      run: |
+        SAGE_VERSION=$(docker run --rm $SAGE_DOCKER:$TAG /sage/sage --version | grep -oP 'SageMath version \K[0-9.]+(?:beta\d+)?(?:rc\d+)?')
+        echo "SAGE_VERSION=${SAGE_VERSION}" >> $GITHUB_ENV
+    - name: Replace Docker image tag
+      run: |
+        IMAGE_NAME="${SAGE_DOCKER}:${SAGE_VERSION}"
+        echo "SAGE_DOCKER_VERSION=${IMAGE_NAME}" >> $GITHUB_ENV
+    - name: Update Dockerfile
+      run: |
+        SAGE_DOCKER_VERSION_ESCAPED=$(echo "${SAGE_DOCKER_VERSION}" | sed 's/\//\\\//g')
+        sed -i "s/FROM \S*/FROM $SAGE_DOCKER_VERSION_ESCAPED/g" Dockerfile
+      working-directory: .github/workflows
+    - name: Commit changes
+      run: |
+        git config --global user.email alice@wonderland
+        git config --global user.name alice
+        git commit -a --amend -m "Dockerfile for Sage ${SAGE_VERSION}"
+        git push -f origin $BRANCH
+
+    - name: Log in to the Container registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ghcr.io/${{ github.repository }}
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .github/workflows
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+
+    - name: Update Dockerfile
+      run: |
+        IMAGE_NAME=ghcr.io/${{ github.repository }}:$BRANCH
+        IMAGE_NAME_ESCAPED=$(echo "${IMAGE_NAME}" | sed 's/\//\\\//g')
+        sed -i "s/FROM \S*/FROM $IMAGE_NAME_ESCAPED/g" Dockerfile
+        sed -i "s/FROM \S*/FROM $SAGE_DOCKER_UPDATED_ESCAPED/g" README.rst
+
+    - name: Have Binder build
+      timeout-minutes: 10
+      continue-on-error: true
+      run: |
+        curl --keepalive-time 600 -L https://mybinder.org/build/gh/kwankyu/sage-binder-env/$BRANCH

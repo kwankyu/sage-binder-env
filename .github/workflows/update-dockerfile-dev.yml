@@ -58,8 +58,7 @@ jobs:
         git config --global user.email alice@wonderland
         git config --global user.name alice
         git add Dockerfile README.rst
-        git diff --quiet && git diff --staged --quiet
-        git commit --allow-empty -m "Update Sage to ${{ env.SAGE_VERSION }}"
+        git diff --quiet && git diff --staged --quiet || git commit -m "Update Sage to ${{ env.SAGE_VERSION }}"
         git push origin ${{ env.BRANCH }}
 
     # Build docker image for Binder from Dockerfile at root

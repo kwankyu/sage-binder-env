@@ -7,7 +7,6 @@ USER root
 # Install JupyterLab, notebook, and ipywidgets inside Sage's virtual environment
 RUN sage -pip install --no-cache-dir jupyterlab notebook ipywidgets
 
-
 # Strip executables to shrink image size
 RUN LC_ALL=C find /home/sage/sage/local /home/sage/sage/src -type f -exec strip '{}' ';' 2>/dev/null || true
 
@@ -16,7 +15,7 @@ RUN find /home/sage/sage -type d -name "__pycache__" -exec rm -rf {} +
 # Remove docs, examples, and other non-runtime files to save space
 RUN rm -rf /home/sage/sage/local/share/doc /home/sage/sage/local/share/*/doc /home/sage/sage/local/share/*/examples
 
-# We use ubuntu:jammy as the runner base to match sagemath/sagemath's OS
+# Runner base to match sagemath/sagemath's OS
 FROM ubuntu:noble
 
 USER root

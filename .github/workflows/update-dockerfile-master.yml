@@ -51,9 +51,8 @@ jobs:
 
     - name: Update files for Binder
       run: |
-        PACKAGE_NAME_ESCAPED=$(echo "${{ env.PACKAGE_NAME }}" | sed 's/\//\\\//g')
-        sed -i "s/FROM \S*/FROM ${PACKAGE_NAME_ESCAPED}/g" Dockerfile
-        sed -i "s/FROM \S*/FROM ${PACKAGE_NAME_ESCAPED}/g" README.rst
+        sed -i "s|FROM \S*|FROM ${{ env.PACKAGE_NAME }}|g" Dockerfile
+        sed -i "s|FROM \S*|FROM ${{ env.PACKAGE_NAME }}|g" README.rst
         git config --global user.email alice@wonderland
         git config --global user.name alice
         git add Dockerfile README.rst

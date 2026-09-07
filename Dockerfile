@@ -1,7 +1,7 @@
 # Dockerfile for binder
 # Reference: https://mybinder.readthedocs.io/en/latest/tutorials/dockerfile.html
 
-FROM ghcr.io/kwankyu/sage-binder-env:10.10.beta9
+FROM ghcr.io/kwankyu/sage-binder-env:10.10.beta10
 
 USER root
 
